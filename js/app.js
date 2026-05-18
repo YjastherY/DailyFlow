@@ -61,10 +61,15 @@ function renderTasks() {
     taskList.innerHTML = "";
 
     if (filteredTasks.length === 0) {
+        const hasTasks = tasks.length > 0;
+        const message = hasTasks
+            ? "Попробуй изменить фильтры, чтобы увидеть другие задачи."
+            : "Добавь первую задачу через форму слева.";
+
         taskList.innerHTML = `
             <div class="empty-state">
                 <h3>Пока задач нет</h3>
-                <p>Добавь первую задачу через форму слева.</p>
+                <p>${message}</p>
             </div>
         `;
         return;
