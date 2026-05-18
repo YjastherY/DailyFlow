@@ -861,6 +861,7 @@ a {
     color: var(--ink);
     font-size: 18px;
     line-height: 1.6;
+    overflow-wrap: anywhere;
 }
 
 .typing-text::after {
@@ -895,11 +896,13 @@ a {
 .day-event strong {
     display: block;
     margin-bottom: 6px;
+    overflow-wrap: anywhere;
 }
 
 .day-event p {
     color: var(--muted);
     line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .holiday-jp {
