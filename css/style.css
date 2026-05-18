@@ -455,3 +455,57 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 600px) {
+    .header {
+        padding: 18px 5%;
+    }
+
+    .nav {
+        gap: 12px;
+    }
+
+    .nav a {
+        font-size: 14px;
+    }
+
+    .hero,
+    .page {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+
+    .page {
+        padding-top: 32px;
+    }
+
+    .page-header h1 {
+        font-size: 34px;
+    }
+
+    .task-form,
+    .task-list-section,
+    .stat-card {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .list-top,
+    .progress-card > div:first-child {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .list-top select {
+        max-width: none;
+    }
+
+    .task-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .small-button {
+        min-height: 42px;
+    }
+}
