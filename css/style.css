@@ -236,6 +236,7 @@ body {
 
 .task-form input,
 .task-form select,
+.task-form textarea,
 .list-top select {
     width: 100%;
     padding: 13px 14px;
@@ -246,8 +247,14 @@ body {
     outline: none;
 }
 
+.task-form textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
 .task-form input:focus,
 .task-form select:focus,
+.task-form textarea:focus,
 .list-top select:focus {
     border-color: #38bdf8;
 }
@@ -334,6 +341,12 @@ body {
 .task-card p {
     color: #94a3b8;
     font-size: 14px;
+}
+
+.task-description {
+    max-width: 620px;
+    margin: 0 0 10px;
+    line-height: 1.5;
 }
 
 .task-actions {
