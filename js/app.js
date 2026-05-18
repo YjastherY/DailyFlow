@@ -9,6 +9,7 @@ const completedTasks = document.querySelector("#completedTasks");
 const activeTasks = document.querySelector("#activeTasks");
 const completionRate = document.querySelector("#completionRate");
 const progressFill = document.querySelector("#progressFill");
+const analyticsEmpty = document.querySelector("#analyticsEmpty");
 
 function getTasks() {
     const savedTasks = localStorage.getItem(TASKS_KEY);
@@ -175,6 +176,7 @@ function renderAnalytics() {
     const active = tasks.length - completed;
     const percent = tasks.length > 0 ? Math.round((completed / tasks.length) * 100) : 0;
 
+    analyticsEmpty.hidden = tasks.length > 0;
     totalTasks.textContent = tasks.length;
     completedTasks.textContent = completed;
     activeTasks.textContent = active;
