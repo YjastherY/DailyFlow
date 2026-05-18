@@ -1,4 +1,5 @@
 const TASKS_KEY = "dailyflow_tasks";
+const DATA_HASH_KEY = "dailyflowData";
 const STATUS_FILTERS = {
     all: "all",
     active: "active",
@@ -33,6 +34,68 @@ const taskStats = {
     overdue: document.querySelector("#taskStatOverdue"),
     today: document.querySelector("#taskStatToday")
 };
+
+function encodeTasksForUrl(tasks) {
+    try {
+        return btoa(unescape(encodeURIComponent(JSON.stringify(tasks))));
+    } catch {
+        return "";
+    }
+}
+
+function decodeTasksFromUrl(value) {
+    try {
+        const decoded = decodeURIComponent(escape(atob(value)));
+        const tasks = JSON.parse(decoded);
+        return Array.isArray(tasks) ? tasks.map(normalizeTask) : [];
+    } catch {
+        return [];
+    }
+}
+
+function importTasksFromHash() {
+    const hash = window.location.hash.slice(1);
+    const params = new URLSearchParams(hash);
+    const payload = params.get(DATA_HASH_KEY);
+
+    if (!payload) {
+        return;
+    }
+
+    const importedTasks = decodeTasksFromUrl(payload);
+
+    if (importedTasks.length > 0) {
+        saveTasks(importedTasks);
+    }
+
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+}
+
+function buildStateUrl(href) {
+    const tasks = getTasks();
+    const payload = encodeTasksForUrl(tasks);
+
+    if (!payload) {
+        return href;
+    }
+
+    return `${href}#${DATA_HASH_KEY}=${payload}`;
+}
+
+function syncNavigationState() {
+    document.querySelectorAll('a[href$=".html"]').forEach(link => {
+        link.addEventListener("click", event => {
+            const href = link.getAttribute("href");
+
+            if (!href || href.startsWith("http")) {
+                return;
+            }
+
+            event.preventDefault();
+            window.location.href = buildStateUrl(href);
+        });
+    });
+}
 
 function todayStart() {
     const today = new Date();
@@ -401,9 +464,14 @@ function renderAnalytics() {
     }
 }
 
+function renderCalendar() {
+}
+
 function renderAll() {
+    importTasksFromHash();
     renderTasks();
     renderAnalytics();
+    renderCalendar();
 }
 
 if (taskForm) {
@@ -427,4 +495,5 @@ if (taskSearch) {
 window.addEventListener("pageshow", renderAll);
 window.addEventListener("storage", renderAll);
 
+syncNavigationState();
 renderAll();
