@@ -7,7 +7,13 @@ const formMessage = document.querySelector("#formMessage");
 
 function getTasks() {
     const savedTasks = localStorage.getItem(TASKS_KEY);
-    return savedTasks ? JSON.parse(savedTasks) : [];
+
+    try {
+        return savedTasks ? JSON.parse(savedTasks) : [];
+    } catch {
+        localStorage.removeItem(TASKS_KEY);
+        return [];
+    }
 }
 
 function saveTasks(tasks) {
