@@ -385,6 +385,59 @@ body {
     margin-bottom: 8px;
 }
 
+.analytics-layout {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.stat-card {
+    padding: 24px;
+    border-radius: 24px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.stat-card span {
+    display: block;
+    margin-bottom: 12px;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.stat-card strong {
+    display: block;
+    color: #f8fafc;
+    font-size: 38px;
+}
+
+.progress-card {
+    grid-column: 1 / -1;
+}
+
+.progress-card > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.progress-track {
+    height: 16px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.9);
+}
+
+.progress-fill {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #22c55e, #38bdf8);
+    transition: width 0.25s ease;
+}
+
 @media (max-width: 900px) {
     .tasks-layout {
         grid-template-columns: 1fr;
@@ -396,5 +449,9 @@ body {
 
     .task-actions {
         flex-direction: row;
+    }
+
+    .analytics-layout {
+        grid-template-columns: 1fr;
     }
 }
