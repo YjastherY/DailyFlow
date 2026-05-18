@@ -42,8 +42,16 @@ const selectedDayTitle = document.querySelector("#selectedDayTitle");
 const selectedDayText = document.querySelector("#selectedDayText");
 const selectedDayEvents = document.querySelector("#selectedDayEvents");
 const calendarTabs = document.querySelectorAll("[data-calendar-filter]");
+const openDatePicker = document.querySelector("#openDatePicker");
+const deadlinePicker = document.querySelector("#deadlinePicker");
+const deadlineGrid = document.querySelector("#deadlineGrid");
+const deadlineTitle = document.querySelector("#deadlineTitle");
+const deadlinePrev = document.querySelector("#deadlinePrev");
+const deadlineNext = document.querySelector("#deadlineNext");
+const deadlineHint = document.querySelector("#deadlineHint");
 let calendarDate = new Date();
 let calendarFilter = "all";
+let deadlinePickerDate = new Date();
 let typingTimer = null;
 
 function encodeTasksForUrl(tasks) {
@@ -713,6 +721,63 @@ function renderCalendar() {
     renderDayDetails(selectedKey, getDayTasks(tasks, selectedKey), getDayHolidays(holidays, selectedKey));
 }
 
+function renderDeadlinePicker() {
+    if (!deadlineGrid) {
+        return;
+    }
+
+    const year = deadlinePickerDate.getFullYear();
+    const month = deadlinePickerDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const holidays = getHolidays(year);
+    const input = document.querySelector("#taskDeadline");
+    const selected = input.value;
+
+    deadlineTitle.textContent = firstDay.toLocaleDateString("ru-RU", {
+        month: "long",
+        year: "numeric"
+    });
+    deadlineGrid.innerHTML = "";
+
+    for (let i = 0; i < startOffset; i += 1) {
+        const empty = document.createElement("span");
+        empty.className = "deadline-empty";
+        deadlineGrid.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+        const date = new Date(year, month, day);
+        const key = formatDateKey(date);
+        const dayHolidays = getDayHolidays(holidays, key);
+        const button = document.createElement("button");
+
+        button.className = "deadline-day";
+        button.type = "button";
+        button.textContent = day;
+
+        if (key === selected) {
+            button.classList.add("selected");
+        }
+
+        if (dayHolidays.length > 0) {
+            button.classList.add("holiday");
+            button.title = dayHolidays.map(holiday => holiday.titleRu).join(", ");
+        }
+
+        button.addEventListener("click", () => {
+            input.value = key;
+            deadlineHint.textContent = dayHolidays.length > 0
+                ? `Выбрано: ${key}. В этот день есть праздник: ${dayHolidays[0].titleRu}.`
+                : `Выбрано: ${key}. Дата добавлена в задачу.`;
+            renderDeadlinePicker();
+        });
+
+        deadlineGrid.appendChild(button);
+    }
+}
+
 function renderAll() {
     importTasksFromHash();
     renderTasks();
@@ -759,6 +824,27 @@ calendarTabs.forEach(tab => {
         renderCalendar();
     });
 });
+
+if (openDatePicker) {
+    openDatePicker.addEventListener("click", () => {
+        deadlinePicker.hidden = !deadlinePicker.hidden;
+        renderDeadlinePicker();
+    });
+}
+
+if (deadlinePrev) {
+    deadlinePrev.addEventListener("click", () => {
+        deadlinePickerDate = new Date(deadlinePickerDate.getFullYear(), deadlinePickerDate.getMonth() - 1, 1);
+        renderDeadlinePicker();
+    });
+}
+
+if (deadlineNext) {
+    deadlineNext.addEventListener("click", () => {
+        deadlinePickerDate = new Date(deadlinePickerDate.getFullYear(), deadlinePickerDate.getMonth() + 1, 1);
+        renderDeadlinePicker();
+    });
+}
 
 window.addEventListener("pageshow", renderAll);
 window.addEventListener("storage", renderAll);

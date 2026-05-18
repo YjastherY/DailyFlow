@@ -86,6 +86,27 @@
                 <input type="date" id="taskDeadline" required>
             </label>
 
+            <button class="date-trigger" id="openDatePicker" type="button">Выбрать дату в красивом календаре</button>
+
+            <div class="deadline-picker" id="deadlinePicker" hidden>
+                <div class="deadline-picker-top">
+                    <button class="calendar-nav" id="deadlinePrev" type="button">‹</button>
+                    <strong id="deadlineTitle">Месяц</strong>
+                    <button class="calendar-nav" id="deadlineNext" type="button">›</button>
+                </div>
+                <div class="deadline-weekdays">
+                    <span>Пн</span>
+                    <span>Вт</span>
+                    <span>Ср</span>
+                    <span>Чт</span>
+                    <span>Пт</span>
+                    <span>Сб</span>
+                    <span>Вс</span>
+                </div>
+                <div class="deadline-grid" id="deadlineGrid"></div>
+                <p class="deadline-hint" id="deadlineHint">Выбери день, и дата сразу попадёт в задачу.</p>
+            </div>
+
             <button class="button primary" type="submit">Добавить задачу</button>
 
             <p class="form-message" id="formMessage"></p>
