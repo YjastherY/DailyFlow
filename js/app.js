@@ -65,6 +65,7 @@ function renderTasks() {
     filteredTasks.forEach(task => {
         const taskCard = document.createElement("article");
         taskCard.className = task.completed ? "task-card completed" : "task-card";
+        const description = task.description ? `<p class="task-description">${task.description}</p>` : "";
 
         taskCard.innerHTML = `
             <div>
@@ -74,6 +75,7 @@ function renderTasks() {
                 </div>
 
                 <h3>${task.title}</h3>
+                ${description}
                 <p>Дедлайн: ${task.deadline}</p>
             </div>
 
@@ -96,6 +98,7 @@ function addTask(event) {
     event.preventDefault();
 
     const title = document.querySelector("#taskTitle").value.trim();
+    const description = document.querySelector("#taskDescription").value.trim();
     const category = document.querySelector("#taskCategory").value;
     const priority = document.querySelector("#taskPriority").value;
     const deadline = document.querySelector("#taskDeadline").value;
@@ -110,6 +113,7 @@ function addTask(event) {
     const newTask = {
         id: Date.now(),
         title,
+        description,
         category,
         priority,
         deadline,
