@@ -39,6 +39,12 @@ function getPriorityClass(priority) {
     return "priority-low";
 }
 
+function escapeHtml(value) {
+    const element = document.createElement("span");
+    element.textContent = value;
+    return element.innerHTML;
+}
+
 function renderTasks() {
     if (!taskList) {
         return;
@@ -78,18 +84,20 @@ function renderTasks() {
     filteredTasks.forEach(task => {
         const taskCard = document.createElement("article");
         taskCard.className = task.completed ? "task-card completed" : "task-card";
-        const description = task.description ? `<p class="task-description">${task.description}</p>` : "";
+        const description = task.description
+            ? `<p class="task-description">${escapeHtml(task.description)}</p>`
+            : "";
 
         taskCard.innerHTML = `
             <div>
                 <div class="task-card-top">
-                    <span class="category">${task.category}</span>
-                    <span class="priority ${getPriorityClass(task.priority)}">${task.priority}</span>
+                    <span class="category">${escapeHtml(task.category)}</span>
+                    <span class="priority ${getPriorityClass(task.priority)}">${escapeHtml(task.priority)}</span>
                 </div>
 
-                <h3>${task.title}</h3>
+                <h3>${escapeHtml(task.title)}</h3>
                 ${description}
-                <p>Дедлайн: ${task.deadline}</p>
+                <p>Дедлайн: ${escapeHtml(task.deadline)}</p>
             </div>
 
             <div class="task-actions">
