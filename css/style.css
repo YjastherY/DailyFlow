@@ -239,7 +239,7 @@ body {
 .task-form input,
 .task-form select,
 .task-form textarea,
-.list-top select {
+.filters select {
     width: 100%;
     padding: 13px 14px;
     border-radius: 12px;
@@ -257,7 +257,7 @@ body {
 .task-form input:focus,
 .task-form select:focus,
 .task-form textarea:focus,
-.list-top select:focus {
+.filters select:focus {
     border-color: #38bdf8;
 }
 
@@ -275,8 +275,19 @@ body {
     margin-bottom: 18px;
 }
 
-.list-top select {
-    max-width: 180px;
+.filters {
+    display: flex;
+    gap: 12px;
+    align-items: end;
+}
+
+.filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 160px;
+    color: #cbd5e1;
+    font-size: 13px;
 }
 
 .task-list {
@@ -539,8 +550,13 @@ body {
         flex-direction: column;
     }
 
-    .list-top select {
-        max-width: none;
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters label {
+        min-width: 0;
     }
 
     .task-actions {
