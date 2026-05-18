@@ -24,10 +24,10 @@
 body {
     min-height: 100vh;
     background:
-        radial-gradient(circle at 12% 12%, rgba(255, 209, 102, 0.18), transparent 28%),
-        radial-gradient(circle at 82% 18%, rgba(88, 166, 255, 0.18), transparent 30%),
+        linear-gradient(110deg, rgba(255, 209, 102, 0.16) 0 16%, transparent 16% 100%),
         linear-gradient(135deg, rgba(18, 148, 144, 0.16), transparent 38%),
         linear-gradient(315deg, rgba(255, 107, 107, 0.12), transparent 42%),
+        linear-gradient(75deg, transparent 0 68%, rgba(88, 166, 255, 0.14) 68% 100%),
         var(--bg);
     color: var(--ink);
     font-family: Arial, sans-serif;
