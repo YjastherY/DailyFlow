@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DailyFlow — календарь</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="header">
+    <a class="logo" href="index.html">DailyFlow</a>
+
+    <nav class="nav">
+        <a href="index.html">Главная</a>
+        <a href="tasks.html">Задачи</a>
+        <a class="active" href="calendar.html">Календарь</a>
+        <a href="analytics.html">Аналитика</a>
+    </nav>
+</header>
+
+<main class="page calendar-page">
+    <section class="page-header page-header-row">
+        <div>
+            <p class="badge">Calendar flow</p>
+            <h1>Живой календарь DailyFlow</h1>
+            <p>Дедлайны задач, русские и японские праздники собраны в одном ярком календаре.</p>
+        </div>
+
+        <a class="button primary" href="tasks.html">Добавить задачу</a>
+    </section>
+
+    <section class="calendar-shell">
+        <div class="calendar-panel">
+            <div class="calendar-toolbar">
+                <button class="calendar-nav" id="prevMonth" type="button">‹</button>
+                <div>
+                    <p class="section-kicker">Month view</p>
+                    <h2 id="calendarTitle">Месяц</h2>
+                </div>
+                <button class="calendar-nav" id="nextMonth" type="button">›</button>
+            </div>
+
+            <div class="calendar-tabs" aria-label="Фильтр календаря">
+                <button class="calendar-tab active" data-calendar-filter="all" type="button">Все</button>
+                <button class="calendar-tab" data-calendar-filter="tasks" type="button">Задачи</button>
+                <button class="calendar-tab" data-calendar-filter="holidays" type="button">Праздники</button>
+                <button class="calendar-tab" data-calendar-filter="jp" type="button">JP</button>
+                <button class="calendar-tab" data-calendar-filter="ru" type="button">RU</button>
+            </div>
+
+            <div class="calendar-weekdays">
+                <span>Пн</span>
+                <span>Вт</span>
+                <span>Ср</span>
+                <span>Чт</span>
+                <span>Пт</span>
+                <span>Сб</span>
+                <span>Вс</span>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+        <aside class="day-panel">
+            <p class="section-kicker">Day details</p>
+            <h2 id="selectedDayTitle">Выбери день</h2>
+            <p class="typing-text" id="selectedDayText">Нажми на дату, и календарь красиво расскажет, что происходит в этот день.</p>
+            <div class="day-events" id="selectedDayEvents"></div>
+        </aside>
+    </section>
+</main>
+
+<script src="js/app.js"></script>
+</body>
+</html>
