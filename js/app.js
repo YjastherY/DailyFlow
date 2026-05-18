@@ -3,6 +3,7 @@ const TASKS_KEY = "dailyflow_tasks";
 const taskForm = document.querySelector("#taskForm");
 const taskList = document.querySelector("#taskList");
 const taskFilter = document.querySelector("#taskFilter");
+const categoryFilter = document.querySelector("#categoryFilter");
 const formMessage = document.querySelector("#formMessage");
 const totalTasks = document.querySelector("#totalTasks");
 const completedTasks = document.querySelector("#completedTasks");
@@ -45,16 +46,17 @@ function renderTasks() {
 
     const tasks = getTasks();
     const filterValue = taskFilter.value;
+    const categoryValue = categoryFilter.value;
 
-    let filteredTasks = tasks;
+    const filteredTasks = tasks.filter(task => {
+        const matchesStatus =
+            filterValue === "Все" ||
+            (filterValue === "Активные" && !task.completed) ||
+            (filterValue === "Выполненные" && task.completed);
+        const matchesCategory = categoryValue === "Все" || task.category === categoryValue;
 
-    if (filterValue === "Активные") {
-        filteredTasks = tasks.filter(task => !task.completed);
-    }
-
-    if (filterValue === "Выполненные") {
-        filteredTasks = tasks.filter(task => task.completed);
-    }
+        return matchesStatus && matchesCategory;
+    });
 
     taskList.innerHTML = "";
 
@@ -194,6 +196,10 @@ if (taskList) {
 
 if (taskFilter) {
     taskFilter.addEventListener("change", renderTasks);
+}
+
+if (categoryFilter) {
+    categoryFilter.addEventListener("change", renderTasks);
 }
 
 renderTasks();
