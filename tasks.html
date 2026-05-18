@@ -19,10 +19,31 @@
 </header>
 
 <main class="page">
-    <section class="page-header">
-        <p class="badge">Task manager</p>
-        <h1>Мои задачи</h1>
-        <p>Добавляй задачи, выбирай приоритет и отмечай выполнение.</p>
+    <section class="page-header page-header-row">
+        <div>
+            <p class="badge">Task manager</p>
+            <h1>Рабочий план дня</h1>
+            <p>Собирай задачи, отслеживай срочность и быстро находи то, что нужно сделать следующим.</p>
+        </div>
+
+        <div class="mini-stats" aria-label="Краткая статистика задач">
+            <article>
+                <span>Всего</span>
+                <strong id="taskStatTotal">0</strong>
+            </article>
+            <article>
+                <span>Активные</span>
+                <strong id="taskStatActive">0</strong>
+            </article>
+            <article>
+                <span>Просрочено</span>
+                <strong id="taskStatOverdue">0</strong>
+            </article>
+            <article>
+                <span>Сегодня</span>
+                <strong id="taskStatToday">0</strong>
+            </article>
+        </div>
     </section>
 
     <section class="tasks-layout">
@@ -31,12 +52,12 @@
 
             <label>
                 Название задачи
-                <input type="text" id="taskTitle" placeholder="Например: сделать отчёт" required>
+                <input type="text" id="taskTitle" placeholder="Например: подготовить отчёт" required>
             </label>
 
             <label>
                 Описание
-                <textarea id="taskDescription" rows="4" placeholder="Короткая заметка к задаче"></textarea>
+                <textarea id="taskDescription" rows="4" placeholder="Контекст, критерий готовности или важная заметка"></textarea>
             </label>
 
             <label>
@@ -71,30 +92,61 @@
 
         <section class="task-list-section">
             <div class="list-top">
-                <h2>Список задач</h2>
-
-                <div class="filters">
-                    <label>
-                        Статус
-                        <select id="taskFilter">
-                            <option value="Все">Все</option>
-                            <option value="Активные">Активные</option>
-                            <option value="Выполненные">Выполненные</option>
-                        </select>
-                    </label>
-
-                    <label>
-                        Категория
-                        <select id="categoryFilter">
-                            <option value="Все">Все</option>
-                            <option value="Работа">Работа</option>
-                            <option value="Учёба">Учёба</option>
-                            <option value="Дом">Дом</option>
-                            <option value="Здоровье">Здоровье</option>
-                            <option value="Личное">Личное</option>
-                        </select>
-                    </label>
+                <div>
+                    <p class="section-kicker">Focus list</p>
+                    <h2>Задачи по приоритету</h2>
                 </div>
+            </div>
+
+            <div class="search-row">
+                <label>
+                    Поиск
+                    <input type="search" id="taskSearch" placeholder="Название или описание">
+                </label>
+
+                <label>
+                    Сортировка
+                    <select id="taskSort">
+                        <option value="deadline">По дедлайну</option>
+                        <option value="priority">По приоритету</option>
+                        <option value="created">Сначала новые</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="filters">
+                <label>
+                    Статус
+                    <select id="taskFilter">
+                        <option value="all">Все</option>
+                        <option value="active">Активные</option>
+                        <option value="completed">Выполненные</option>
+                        <option value="overdue">Просроченные</option>
+                        <option value="today">На сегодня</option>
+                    </select>
+                </label>
+
+                <label>
+                    Категория
+                    <select id="categoryFilter">
+                        <option value="all">Все</option>
+                        <option value="Работа">Работа</option>
+                        <option value="Учёба">Учёба</option>
+                        <option value="Дом">Дом</option>
+                        <option value="Здоровье">Здоровье</option>
+                        <option value="Личное">Личное</option>
+                    </select>
+                </label>
+
+                <label>
+                    Приоритет
+                    <select id="priorityFilter">
+                        <option value="all">Все</option>
+                        <option value="Высокий">Высокий</option>
+                        <option value="Средний">Средний</option>
+                        <option value="Низкий">Низкий</option>
+                    </select>
+                </label>
             </div>
 
             <div class="task-list" id="taskList"></div>
