@@ -44,6 +44,10 @@ body {
     color: #38bdf8;
 }
 
+.nav a.active {
+    color: #38bdf8;
+}
+
 .hero {
     min-height: calc(100vh - 80px);
     padding: 60px 8%;
