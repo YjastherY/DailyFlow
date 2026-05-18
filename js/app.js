@@ -4,6 +4,11 @@ const taskForm = document.querySelector("#taskForm");
 const taskList = document.querySelector("#taskList");
 const taskFilter = document.querySelector("#taskFilter");
 const formMessage = document.querySelector("#formMessage");
+const totalTasks = document.querySelector("#totalTasks");
+const completedTasks = document.querySelector("#completedTasks");
+const activeTasks = document.querySelector("#activeTasks");
+const completionRate = document.querySelector("#completionRate");
+const progressFill = document.querySelector("#progressFill");
 
 function getTasks() {
     const savedTasks = localStorage.getItem(TASKS_KEY);
@@ -160,6 +165,23 @@ function handleTaskActions(event) {
     renderTasks();
 }
 
+function renderAnalytics() {
+    if (!totalTasks) {
+        return;
+    }
+
+    const tasks = getTasks();
+    const completed = tasks.filter(task => task.completed).length;
+    const active = tasks.length - completed;
+    const percent = tasks.length > 0 ? Math.round((completed / tasks.length) * 100) : 0;
+
+    totalTasks.textContent = tasks.length;
+    completedTasks.textContent = completed;
+    activeTasks.textContent = active;
+    completionRate.textContent = `${percent}%`;
+    progressFill.style.width = `${percent}%`;
+}
+
 if (taskForm) {
     taskForm.addEventListener("submit", addTask);
 }
@@ -173,3 +195,4 @@ if (taskFilter) {
 }
 
 renderTasks();
+renderAnalytics();
