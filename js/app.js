@@ -598,7 +598,7 @@ function typeText(element, text) {
         if (index >= text.length) {
             clearInterval(typingTimer);
         }
-    }, 18);
+    }, 7);
 }
 
 function renderDayDetails(dateKey, dayTasks, dayHolidays) {
