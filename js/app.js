@@ -60,21 +60,34 @@ let calendarFilter = "all";
 let deadlinePickerDate = new Date();
 let typingTimer = null;
 
-function encodeTasksForUrl(tasks) {
+function encodeStateForUrl() {
     try {
-        return btoa(unescape(encodeURIComponent(JSON.stringify(tasks))));
+        const state = {
+            tasks: getTasks(),
+            projects: getProjects()
+        };
+
+        return btoa(unescape(encodeURIComponent(JSON.stringify(state))));
     } catch {
         return "";
     }
 }
 
-function decodeTasksFromUrl(value) {
+function decodeStateFromUrl(value) {
     try {
         const decoded = decodeURIComponent(escape(atob(value)));
-        const tasks = JSON.parse(decoded);
-        return Array.isArray(tasks) ? tasks.map(normalizeTask) : [];
+        const state = JSON.parse(decoded);
+
+        if (Array.isArray(state)) {
+            return { tasks: state.map(normalizeTask), projects: [] };
+        }
+
+        return {
+            tasks: Array.isArray(state.tasks) ? state.tasks.map(normalizeTask) : [],
+            projects: Array.isArray(state.projects) ? state.projects.map(normalizeProject) : []
+        };
     } catch {
-        return [];
+        return { tasks: [], projects: [] };
     }
 }
 
@@ -87,18 +100,21 @@ function importTasksFromHash() {
         return;
     }
 
-    const importedTasks = decodeTasksFromUrl(payload);
+    const importedState = decodeStateFromUrl(payload);
 
-    if (importedTasks.length > 0) {
-        saveTasks(importedTasks);
+    if (importedState.tasks.length > 0) {
+        saveTasks(importedState.tasks);
+    }
+
+    if (importedState.projects.length > 0) {
+        saveProjects(importedState.projects);
     }
 
     history.replaceState(null, "", window.location.pathname + window.location.search);
 }
 
 function buildStateUrl(href) {
-    const tasks = getTasks();
-    const payload = encodeTasksForUrl(tasks);
+    const payload = encodeStateForUrl();
 
     if (!payload) {
         return href;
@@ -221,6 +237,7 @@ function daysUntil(deadline) {
 function normalizeTask(task) {
     return {
         id: task.id || Date.now(),
+        projectId: task.projectId || "",
         title: task.title || "",
         description: task.description || "",
         category: task.category || "Личное",
@@ -229,6 +246,15 @@ function normalizeTask(task) {
         completed: Boolean(task.completed),
         createdAt: task.createdAt || new Date().toISOString(),
         completedAt: task.completedAt || null
+    };
+}
+
+function normalizeProject(project) {
+    return {
+        id: project.id || `project-${Date.now()}`,
+        title: project.title || "Новый проект",
+        goal: project.goal || "",
+        createdAt: project.createdAt || new Date().toISOString()
     };
 }
 
@@ -246,6 +272,27 @@ function getTasks() {
 
 function saveTasks(tasks) {
     localStorage.setItem(TASKS_KEY, JSON.stringify(tasks.map(normalizeTask)));
+}
+
+function getProjects() {
+    const savedProjects = localStorage.getItem(PROJECTS_KEY);
+
+    try {
+        const projects = savedProjects ? JSON.parse(savedProjects) : [];
+        return Array.isArray(projects) ? projects.map(normalizeProject) : [];
+    } catch {
+        localStorage.removeItem(PROJECTS_KEY);
+        return [];
+    }
+}
+
+function saveProjects(projects) {
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects.map(normalizeProject)));
+}
+
+function getProjectTitle(projectId) {
+    const project = getProjects().find(item => item.id === projectId);
+    return project ? project.title : "Без проекта";
 }
 
 function getTaskMeta(task) {
@@ -313,6 +360,88 @@ function getStats(tasks) {
     return { completed, active, overdue, today, highActive, percent, focus };
 }
 
+function getProjectStats(project, tasks) {
+    const projectTasks = tasks.filter(task => task.projectId === project.id);
+    const completed = projectTasks.filter(task => task.completed).length;
+    const active = projectTasks.length - completed;
+    const overdue = projectTasks.filter(task => getTaskMeta(task).isOverdue).length;
+    const percent = projectTasks.length > 0 ? Math.round((completed / projectTasks.length) * 100) : 0;
+
+    return {
+        total: projectTasks.length,
+        completed,
+        active,
+        overdue,
+        percent
+    };
+}
+
+function renderProjectOptions() {
+    const projects = getProjects();
+    const controls = [taskProject, projectFilter].filter(Boolean);
+
+    controls.forEach(control => {
+        const currentValue = control.value;
+        const baseOptions = control === projectFilter
+            ? '<option value="all">Все</option><option value="">Без проекта</option>'
+            : '<option value="">Без проекта</option>';
+
+        control.innerHTML = baseOptions + projects.map(project => (
+            `<option value="${escapeHtml(project.id)}">${escapeHtml(project.title)}</option>`
+        )).join("");
+        control.value = [...control.options].some(option => option.value === currentValue)
+            ? currentValue
+            : control.options[0].value;
+    });
+}
+
+function renderProjectCards(container, projects, tasks) {
+    if (!container) {
+        return;
+    }
+
+    if (projects.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state project-empty">
+                <h3>Проектов пока нет</h3>
+                <p>Создай проект и привяжи к нему несколько задач, чтобы отслеживать общий прогресс.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = projects.map(project => {
+        const stats = getProjectStats(project, tasks);
+
+        return `
+            <article class="project-card">
+                <div>
+                    <span>Проект</span>
+                    <h3>${escapeHtml(project.title)}</h3>
+                    ${project.goal ? `<p>${escapeHtml(project.goal)}</p>` : ""}
+                </div>
+
+                <div class="project-progress">
+                    <strong>${stats.percent}%</strong>
+                    <div class="progress-track mini-progress">
+                        <div class="progress-fill" style="width: ${stats.percent}%"></div>
+                    </div>
+                    <p>${stats.completed}/${stats.total} задач · активные: ${stats.active} · просрочено: ${stats.overdue}</p>
+                </div>
+            </article>
+        `;
+    }).join("");
+}
+
+function renderProjects() {
+    const projects = getProjects();
+    const tasks = getTasks();
+
+    renderProjectOptions();
+    renderProjectCards(projectList, projects, tasks);
+    renderProjectCards(analyticsProjectList, projects, tasks);
+}
+
 function matchesStatus(task, status) {
     const meta = getTaskMeta(task);
 
@@ -377,6 +506,7 @@ function renderTasks() {
     const filterValue = taskFilter.value;
     const categoryValue = categoryFilter.value;
     const priorityValue = priorityFilter.value;
+    const projectValue = projectFilter.value;
     const searchValue = taskSearch.value.trim().toLowerCase();
     const sortValue = taskSort.value;
 
@@ -385,8 +515,9 @@ function renderTasks() {
         const matchesText = !searchValue || text.includes(searchValue);
         const matchesCategory = categoryValue === "all" || task.category === categoryValue;
         const matchesPriority = priorityValue === "all" || task.priority === priorityValue;
+        const matchesProject = projectValue === "all" || task.projectId === projectValue;
 
-        return matchesText && matchesCategory && matchesPriority && matchesStatus(task, filterValue);
+        return matchesText && matchesCategory && matchesPriority && matchesProject && matchesStatus(task, filterValue);
     }), sortValue);
 
     renderTaskStats(tasks);
@@ -419,6 +550,7 @@ function renderTasks() {
         taskCard.innerHTML = `
             <div class="task-content">
                 <div class="task-card-top">
+                    <span class="project-chip">${escapeHtml(getProjectTitle(task.projectId))}</span>
                     <span class="category">${escapeHtml(task.category)}</span>
                     <span class="priority ${getPriorityClass(task.priority)}">${escapeHtml(task.priority)}</span>
                     <span class="deadline-chip">${escapeHtml(meta.label)}</span>
@@ -448,6 +580,7 @@ function addTask(event) {
     event.preventDefault();
 
     const title = document.querySelector("#taskTitle").value.trim();
+    const projectId = document.querySelector("#taskProject").value;
     const description = document.querySelector("#taskDescription").value.trim();
     const category = document.querySelector("#taskCategory").value;
     const priority = document.querySelector("#taskPriority").value;
@@ -461,6 +594,7 @@ function addTask(event) {
     const tasks = getTasks();
     const newTask = normalizeTask({
         id: Date.now(),
+        projectId,
         title,
         description,
         category,
@@ -477,6 +611,31 @@ function addTask(event) {
     formMessage.textContent = "Задача добавлена. Аналитика обновится автоматически.";
 
     renderTasks();
+    renderProjects();
+}
+
+function addProject(event) {
+    event.preventDefault();
+
+    const title = document.querySelector("#projectTitle").value.trim();
+    const goal = document.querySelector("#projectGoal").value.trim();
+
+    if (title.length < 3) {
+        return;
+    }
+
+    const projects = getProjects();
+
+    projects.push(normalizeProject({
+        id: `project-${Date.now()}`,
+        title,
+        goal,
+        createdAt: new Date().toISOString()
+    }));
+
+    saveProjects(projects);
+    projectForm.reset();
+    renderProjects();
 }
 
 function handleTaskActions(event) {
@@ -511,6 +670,7 @@ function handleTaskActions(event) {
 
     saveTasks(tasks);
     renderTasks();
+    renderProjects();
 }
 
 function getNearestTask(tasks) {
@@ -647,7 +807,7 @@ function renderDayDetails(dateKey, dayTasks, dayHolidays) {
         event.innerHTML = `
             <span>Task</span>
             <strong>${escapeHtml(task.title)}</strong>
-            <p>${escapeHtml(task.category)} · ${escapeHtml(task.priority)} · ${task.completed ? "выполнено" : "активно"}</p>
+            <p>${escapeHtml(getProjectTitle(task.projectId))} · ${escapeHtml(task.category)} · ${escapeHtml(task.priority)} · ${task.completed ? "выполнено" : "активно"}</p>
         `;
         selectedDayEvents.appendChild(event);
     });
@@ -786,6 +946,7 @@ function renderDeadlinePicker() {
 
 function renderAll() {
     importTasksFromHash();
+    renderProjects();
     renderTasks();
     renderAnalytics();
     renderCalendar();
@@ -795,11 +956,15 @@ if (taskForm) {
     taskForm.addEventListener("submit", addTask);
 }
 
+if (projectForm) {
+    projectForm.addEventListener("submit", addProject);
+}
+
 if (taskList) {
     taskList.addEventListener("click", handleTaskActions);
 }
 
-[taskFilter, categoryFilter, priorityFilter, taskSort].forEach(control => {
+[taskFilter, categoryFilter, priorityFilter, projectFilter, taskSort].forEach(control => {
     if (control) {
         control.addEventListener("change", renderTasks);
     }
