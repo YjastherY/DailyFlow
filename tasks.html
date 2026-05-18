@@ -52,6 +52,13 @@
             <h2>Новая задача</h2>
 
             <label>
+                Проект
+                <select id="taskProject">
+                    <option value="">Без проекта</option>
+                </select>
+            </label>
+
+            <label>
                 Название задачи
                 <input type="text" id="taskTitle" placeholder="Например: подготовить отчёт" required>
             </label>
@@ -113,6 +120,23 @@
         </form>
 
         <section class="task-list-section">
+            <section class="project-section">
+                <div class="project-section-top">
+                    <div>
+                        <p class="section-kicker">Project flow</p>
+                        <h2>Проекты</h2>
+                    </div>
+
+                    <form class="project-form" id="projectForm">
+                        <input type="text" id="projectTitle" placeholder="Например: дипломный проект" required>
+                        <input type="text" id="projectGoal" placeholder="Цель проекта">
+                        <button class="button primary" type="submit">Создать проект</button>
+                    </form>
+                </div>
+
+                <div class="project-list" id="projectList"></div>
+            </section>
+
             <div class="list-top">
                 <div>
                     <p class="section-kicker">Focus list</p>
@@ -167,6 +191,14 @@
                         <option value="Высокий">Высокий</option>
                         <option value="Средний">Средний</option>
                         <option value="Низкий">Низкий</option>
+                    </select>
+                </label>
+
+                <label>
+                    Проект
+                    <select id="projectFilter">
+                        <option value="all">Все</option>
+                        <option value="">Без проекта</option>
                     </select>
                 </label>
             </div>

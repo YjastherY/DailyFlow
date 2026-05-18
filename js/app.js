@@ -1,4 +1,5 @@
 const TASKS_KEY = "dailyflow_tasks";
+const PROJECTS_KEY = "dailyflow_projects";
 const DATA_HASH_KEY = "dailyflowData";
 const STATUS_FILTERS = {
     all: "all",
@@ -9,10 +10,15 @@ const STATUS_FILTERS = {
 };
 
 const taskForm = document.querySelector("#taskForm");
+const projectForm = document.querySelector("#projectForm");
 const taskList = document.querySelector("#taskList");
+const projectList = document.querySelector("#projectList");
+const analyticsProjectList = document.querySelector("#analyticsProjectList");
 const taskFilter = document.querySelector("#taskFilter");
 const categoryFilter = document.querySelector("#categoryFilter");
 const priorityFilter = document.querySelector("#priorityFilter");
+const projectFilter = document.querySelector("#projectFilter");
+const taskProject = document.querySelector("#taskProject");
 const taskSearch = document.querySelector("#taskSearch");
 const taskSort = document.querySelector("#taskSort");
 const formMessage = document.querySelector("#formMessage");
