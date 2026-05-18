@@ -34,6 +34,17 @@ const taskStats = {
     overdue: document.querySelector("#taskStatOverdue"),
     today: document.querySelector("#taskStatToday")
 };
+const calendarGrid = document.querySelector("#calendarGrid");
+const calendarTitle = document.querySelector("#calendarTitle");
+const prevMonth = document.querySelector("#prevMonth");
+const nextMonth = document.querySelector("#nextMonth");
+const selectedDayTitle = document.querySelector("#selectedDayTitle");
+const selectedDayText = document.querySelector("#selectedDayText");
+const selectedDayEvents = document.querySelector("#selectedDayEvents");
+const calendarTabs = document.querySelectorAll("[data-calendar-filter]");
+let calendarDate = new Date();
+let calendarFilter = "all";
+let typingTimer = null;
 
 function encodeTasksForUrl(tasks) {
     try {
@@ -101,6 +112,77 @@ function todayStart() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return today;
+}
+
+function formatDateKey(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
+function makeDate(year, monthIndex, day) {
+    return new Date(year, monthIndex, day);
+}
+
+function nthWeekday(year, monthIndex, weekday, nth) {
+    const date = new Date(year, monthIndex, 1);
+    const shift = (weekday - date.getDay() + 7) % 7;
+    return new Date(year, monthIndex, 1 + shift + (nth - 1) * 7);
+}
+
+function addHoliday(list, date, titleRu, titleJp, country, description) {
+    list.push({
+        date: formatDateKey(date),
+        titleRu,
+        titleJp,
+        country,
+        description
+    });
+}
+
+function getHolidays(year) {
+    const holidays = [];
+
+    [
+        [1, 1, "Новый год", "元日", "JP", "Начало года в Японии, день семейных встреч и первых храмовых посещений."],
+        [2, 11, "День основания государства", "建国記念の日", "JP", "Праздник, связанный с историей основания Японии."],
+        [2, 23, "День рождения императора", "天皇誕生日", "JP", "Государственный праздник в честь дня рождения действующего императора."],
+        [3, 20, "День весеннего равноденствия", "春分の日", "JP", "День смены сезона, семейной памяти и наблюдения за весной."],
+        [4, 29, "День Сёва", "昭和の日", "JP", "Начало периода Golden Week и день размышления о прошлом страны."],
+        [5, 3, "День Конституции", "憲法記念日", "JP", "Праздник в честь послевоенной Конституции Японии."],
+        [5, 4, "День зелени", "みどりの日", "JP", "День природы, парков и спокойного отдыха на свежем воздухе."],
+        [5, 5, "День детей", "こどもの日", "JP", "Праздник детей и семейного благополучия."],
+        [8, 11, "День гор", "山の日", "JP", "Праздник благодарности горам и природе Японии."],
+        [9, 23, "День осеннего равноденствия", "秋分の日", "JP", "Осенний день памяти семьи и смены сезона."],
+        [11, 3, "День культуры", "文化の日", "JP", "Праздник искусства, науки и культурных достижений."],
+        [11, 23, "День благодарности труду", "勤労感謝の日", "JP", "День уважения к труду и благодарности людям за вклад в общество."],
+        [1, 1, "Новогодние каникулы", "Новый год", "RU", "Начало длинных зимних праздников в России."],
+        [1, 7, "Рождество Христово", "Рождество", "RU", "Официальный праздничный день в России."],
+        [2, 23, "День защитника Отечества", "23 февраля", "RU", "Праздник, связанный с воинской службой и защитой страны."],
+        [3, 8, "Международный женский день", "8 марта", "RU", "Весенний праздник внимания и поздравлений."],
+        [5, 1, "Праздник Весны и Труда", "1 мая", "RU", "Выходной день, связанный с весной и трудом."],
+        [5, 9, "День Победы", "9 мая", "RU", "Один из главных памятных праздников России."],
+        [6, 12, "День России", "12 июня", "RU", "Государственный праздник Российской Федерации."],
+        [11, 4, "День народного единства", "4 ноября", "RU", "Праздник единства и гражданской истории России."]
+    ].forEach(([month, day, ru, jp, country, description]) => {
+        addHoliday(holidays, makeDate(year, month - 1, day), ru, jp, country, description);
+    });
+
+    [
+        [0, 1, 2, "День совершеннолетия", "成人の日", "Праздник молодых людей, достигших совершеннолетия."],
+        [6, 1, 3, "День моря", "海の日", "Летний праздник благодарности морю."],
+        [8, 1, 3, "День почитания пожилых", "敬老の日", "День уважения старших поколений."],
+        [9, 1, 2, "День спорта", "スポーツの日", "Праздник спорта, движения и здоровья."]
+    ].forEach(([monthIndex, weekday, nth, ru, jp, description]) => {
+        addHoliday(holidays, nthWeekday(year, monthIndex, weekday, nth), ru, jp, "JP", description);
+    });
+
+    for (let day = 2; day <= 8; day += 1) {
+        addHoliday(holidays, makeDate(year, 0, day), "Новогодние каникулы", "Новогодние каникулы", "RU", "Часть российских новогодних выходных.");
+    }
+
+    return holidays;
 }
 
 function parseDeadline(deadline) {
@@ -464,7 +546,171 @@ function renderAnalytics() {
     }
 }
 
+function getDayTasks(tasks, dateKey) {
+    return tasks.filter(task => task.deadline === dateKey);
+}
+
+function getDayHolidays(holidays, dateKey) {
+    return holidays.filter(holiday => holiday.date === dateKey);
+}
+
+function eventAllowed(dayTasks, dayHolidays) {
+    if (calendarFilter === "tasks") {
+        return dayTasks.length > 0;
+    }
+
+    if (calendarFilter === "holidays") {
+        return dayHolidays.length > 0;
+    }
+
+    if (calendarFilter === "jp") {
+        return dayHolidays.some(holiday => holiday.country === "JP");
+    }
+
+    if (calendarFilter === "ru") {
+        return dayHolidays.some(holiday => holiday.country === "RU");
+    }
+
+    return true;
+}
+
+function typeText(element, text) {
+    if (!element) {
+        return;
+    }
+
+    clearInterval(typingTimer);
+    element.textContent = "";
+
+    let index = 0;
+    typingTimer = setInterval(() => {
+        element.textContent += text[index] || "";
+        index += 1;
+
+        if (index >= text.length) {
+            clearInterval(typingTimer);
+        }
+    }, 18);
+}
+
+function renderDayDetails(dateKey, dayTasks, dayHolidays) {
+    if (!selectedDayTitle) {
+        return;
+    }
+
+    const date = parseDeadline(dateKey);
+    const title = date.toLocaleDateString("ru-RU", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+    const taskText = dayTasks.length === 0
+        ? "задач с дедлайном нет"
+        : `${dayTasks.length} задач(и) с дедлайном`;
+    const holidayText = dayHolidays.length === 0
+        ? "праздников нет"
+        : `${dayHolidays.length} праздничных события`;
+
+    selectedDayTitle.textContent = title;
+    typeText(selectedDayText, `На этот день: ${taskText}, ${holidayText}. DailyFlow подсказывает, что стоит держать в поле зрения.`);
+
+    selectedDayEvents.innerHTML = "";
+
+    dayHolidays.forEach(holiday => {
+        const event = document.createElement("article");
+        event.className = `day-event holiday-${holiday.country.toLowerCase()}`;
+        event.innerHTML = `
+            <span>${holiday.country}</span>
+            <strong>${escapeHtml(holiday.titleRu)} · ${escapeHtml(holiday.titleJp)}</strong>
+            <p>${escapeHtml(holiday.description)}</p>
+        `;
+        selectedDayEvents.appendChild(event);
+    });
+
+    dayTasks.forEach(task => {
+        const event = document.createElement("article");
+        event.className = task.completed ? "day-event task-done" : "day-event task-open";
+        event.innerHTML = `
+            <span>Task</span>
+            <strong>${escapeHtml(task.title)}</strong>
+            <p>${escapeHtml(task.category)} · ${escapeHtml(task.priority)} · ${task.completed ? "выполнено" : "активно"}</p>
+        `;
+        selectedDayEvents.appendChild(event);
+    });
+
+    if (dayTasks.length === 0 && dayHolidays.length === 0) {
+        selectedDayEvents.innerHTML = `
+            <article class="day-event">
+                <span>Free day</span>
+                <strong>Свободное окно</strong>
+                <p>Хороший день для планирования, отдыха или переноса задачи без спешки.</p>
+            </article>
+        `;
+    }
+}
+
 function renderCalendar() {
+    if (!calendarGrid) {
+        return;
+    }
+
+    const tasks = getTasks();
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+    const holidays = getHolidays(year);
+    const firstDay = new Date(year, month, 1);
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const todayKey = formatDateKey(todayStart());
+
+    calendarTitle.textContent = firstDay.toLocaleDateString("ru-RU", {
+        month: "long",
+        year: "numeric"
+    });
+    calendarGrid.innerHTML = "";
+
+    for (let i = 0; i < startOffset; i += 1) {
+        const empty = document.createElement("div");
+        empty.className = "calendar-day empty";
+        calendarGrid.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+        const date = new Date(year, month, day);
+        const dateKey = formatDateKey(date);
+        const dayTasks = getDayTasks(tasks, dateKey);
+        const dayHolidays = getDayHolidays(holidays, dateKey);
+        const visible = eventAllowed(dayTasks, dayHolidays);
+        const button = document.createElement("button");
+        const jpHoliday = dayHolidays.some(holiday => holiday.country === "JP");
+        const ruHoliday = dayHolidays.some(holiday => holiday.country === "RU");
+
+        button.className = "calendar-day";
+        button.type = "button";
+        button.dataset.date = dateKey;
+
+        if (dateKey === todayKey) {
+            button.classList.add("current");
+        }
+
+        if (!visible) {
+            button.classList.add("muted-day");
+        }
+
+        button.innerHTML = `
+            <span class="day-number">${day}</span>
+            <span class="day-badges">
+                ${dayTasks.length ? `<i class="task-dot">${dayTasks.length}</i>` : ""}
+                ${jpHoliday ? '<i class="jp-dot">JP</i>' : ""}
+                ${ruHoliday ? '<i class="ru-dot">RU</i>' : ""}
+            </span>
+        `;
+        button.addEventListener("click", () => renderDayDetails(dateKey, dayTasks, dayHolidays));
+        calendarGrid.appendChild(button);
+    }
+
+    const selectedKey = formatDateKey(new Date(year, month, Math.min(new Date().getDate(), daysInMonth)));
+    renderDayDetails(selectedKey, getDayTasks(tasks, selectedKey), getDayHolidays(holidays, selectedKey));
 }
 
 function renderAll() {
@@ -491,6 +737,28 @@ if (taskList) {
 if (taskSearch) {
     taskSearch.addEventListener("input", renderTasks);
 }
+
+if (prevMonth) {
+    prevMonth.addEventListener("click", () => {
+        calendarDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1);
+        renderCalendar();
+    });
+}
+
+if (nextMonth) {
+    nextMonth.addEventListener("click", () => {
+        calendarDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1);
+        renderCalendar();
+    });
+}
+
+calendarTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+        calendarFilter = tab.dataset.calendarFilter;
+        calendarTabs.forEach(item => item.classList.toggle("active", item === tab));
+        renderCalendar();
+    });
+});
 
 window.addEventListener("pageshow", renderAll);
 window.addEventListener("storage", renderAll);
