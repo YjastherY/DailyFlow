@@ -19,10 +19,14 @@
 </header>
 
 <main class="page">
-    <section class="page-header">
-        <p class="badge">Productivity stats</p>
-        <h1>Аналитика продуктивности</h1>
-        <p>Следи за общим прогрессом, количеством активных задач и долей выполненной работы.</p>
+    <section class="page-header page-header-row">
+        <div>
+            <p class="badge">Productivity stats</p>
+            <h1>Пульс продуктивности</h1>
+            <p>Аналитика показывает, где есть риск просрочки, сколько задач ждёт сегодня и какой фокус сейчас важнее.</p>
+        </div>
+
+        <a class="button secondary" href="tasks.html">Вернуться к задачам</a>
     </section>
 
     <section class="analytics-layout" id="analytics">
@@ -41,6 +45,21 @@
             <strong id="activeTasks">0</strong>
         </article>
 
+        <article class="stat-card danger-card">
+            <span>Просрочено</span>
+            <strong id="overdueTasks">0</strong>
+        </article>
+
+        <article class="stat-card today-card">
+            <span>На сегодня</span>
+            <strong id="todayTasks">0</strong>
+        </article>
+
+        <article class="stat-card">
+            <span>Высокий приоритет</span>
+            <strong id="highPriorityTasks">0</strong>
+        </article>
+
         <article class="stat-card progress-card">
             <div>
                 <span>Процент выполнения</span>
@@ -50,6 +69,24 @@
             <div class="progress-track" aria-label="Прогресс выполнения задач">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
+        </article>
+
+        <article class="insight-card">
+            <span>Фокус-оценка</span>
+            <strong id="focusScore">0%</strong>
+            <p>Учитывает завершение задач, просрочки и задачи на сегодня.</p>
+        </article>
+
+        <article class="insight-card">
+            <span>Ближайшая задача</span>
+            <strong id="nearestTask">Нет активных задач</strong>
+            <p>Помогает выбрать следующий конкретный шаг.</p>
+        </article>
+
+        <article class="insight-card">
+            <span>Главная категория</span>
+            <strong id="focusCategory">Нет активных задач</strong>
+            <p>Показывает, куда сейчас уходит больше всего внимания.</p>
         </article>
     </section>
 
