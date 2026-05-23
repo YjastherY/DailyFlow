@@ -118,6 +118,7 @@ FK: `task_id` -> `tasks(id)`
 - `database/seed.sql` - заполнение таблиц тестовыми данными.
 - `database/queries.sql` - обязательные SQL-запросы.
 - `database/dailyflow_up11.sqlite` - созданная SQLite-база после выполнения скриптов.
+- `database/verify_up11.py` - скрипт повторной проверки выполнения SQL.
 - `database/verification_output.txt` - результат выполнения SQL и контрольных запросов.
 
 ## Обязательные запросы
@@ -133,3 +134,16 @@ FK: `task_id` -> `tasks(id)`
 ## ER-диаграмма
 
 ER-диаграмма находится в файле `docs/er-diagram.png`.
+
+## Проверка выполнения
+
+SQL-скрипты были проверены через SQLite с помощью файла `database/verify_up11.py`.
+
+Результат проверки сохранён в `database/verification_output.txt`. В нём зафиксировано:
+
+- после выполнения `schema.sql` и `seed.sql` созданы и заполнены таблицы `users`, `projects`, `categories`, `tasks`, `holidays`, `task_comments`, `task_status_history`;
+- `SELECT` с условием вернул активные задачи высокого приоритета;
+- `INSERT` выполнился с результатом `affected rows: 1`;
+- `UPDATE` выполнился с результатом `affected rows: 1`;
+- `DELETE` выполнился с результатом `affected rows: 1`;
+- `SELECT` с `JOIN` вывел задачи вместе с проектами, категориями и владельцами.
