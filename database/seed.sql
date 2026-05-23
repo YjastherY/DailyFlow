@@ -16,13 +16,13 @@ INSERT INTO projects (user_id, title, goal, status) VALUES
     (1, 'Учебная практика УП.11', 'Спроектировать и реализовать базу данных по теме проекта', 'active'),
     (2, 'Визуальная полировка', 'Сделать интерфейс живым, удобным и презентабельным', 'completed');
 
-INSERT INTO tasks (project_id, category_id, title, description, priority, deadline, status, completed_at) VALUES
-    (1, 1, 'Собрать страницу задач', 'Форма, фильтры, проекты и дедлайны', 'high', '2026-05-20', 'completed', '2026-05-20 18:30:00'),
-    (1, 1, 'Добавить календарь', 'Календарь дедлайнов и праздников', 'high', '2026-05-23', 'active', NULL),
-    (2, 1, 'Спроектировать таблицы БД', 'Определить PK, FK и связи', 'high', '2026-05-24', 'active', NULL),
-    (2, 1, 'Подготовить SQL-запросы', 'SELECT, INSERT, UPDATE, DELETE и JOIN', 'medium', '2026-05-24', 'active', NULL),
-    (3, 2, 'Обновить скриншоты', 'Сделать скриншоты актуальными', 'medium', '2026-05-22', 'completed', '2026-05-22 21:00:00'),
-    (NULL, 5, 'Проверить README', 'Убедиться, что запуск описан корректно', 'low', '2026-05-25', 'active', NULL);
+INSERT INTO tasks (user_id, project_id, category_id, title, description, priority, deadline, status, completed_at) VALUES
+    (1, 1, 1, 'Собрать страницу задач', 'Форма, фильтры, проекты и дедлайны', 'high', '2026-05-20', 'completed', '2026-05-20 18:30:00'),
+    (1, 1, 1, 'Добавить календарь', 'Календарь дедлайнов и праздников', 'high', '2026-05-23', 'active', NULL),
+    (1, 2, 1, 'Спроектировать таблицы БД', 'Определить PK, FK и связи', 'high', '2026-05-24', 'active', NULL),
+    (1, 2, 1, 'Подготовить SQL-запросы', 'SELECT, INSERT, UPDATE, DELETE и JOIN', 'medium', '2026-05-24', 'active', NULL),
+    (2, 3, 2, 'Обновить скриншоты', 'Сделать скриншоты актуальными', 'medium', '2026-05-22', 'completed', '2026-05-22 21:00:00'),
+    (1, NULL, 5, 'Проверить README', 'Убедиться, что запуск описан корректно', 'low', '2026-05-25', 'active', NULL);
 
 INSERT INTO holidays (title_ru, title_jp, country_code, holiday_date, description) VALUES
     ('Новый год', '元日', 'JP', '2026-01-01', 'Начало года в Японии'),

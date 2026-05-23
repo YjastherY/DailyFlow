@@ -21,7 +21,7 @@ def split_sql(sql):
     for line in sql.splitlines():
         stripped = line.strip()
 
-        if not stripped or stripped.startswith("--") or stripped.startswith("PRAGMA"):
+        if not stripped or stripped.startswith("PRAGMA"):
             continue
 
         buffer.append(line)

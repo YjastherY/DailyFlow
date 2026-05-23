@@ -47,6 +47,7 @@ FK: `user_id` -> `users(id)`
 Хранит задачи DailyFlow.
 
 - `id` INTEGER PRIMARY KEY AUTOINCREMENT
+- `user_id` INTEGER NOT NULL
 - `project_id` INTEGER
 - `category_id` INTEGER NOT NULL
 - `title` TEXT NOT NULL
@@ -58,9 +59,10 @@ FK: `user_id` -> `users(id)`
 - `completed_at` TEXT
 
 PK: `id`  
+FK: `user_id` -> `users(id)`  
 FK: `project_id` -> `projects(id)`  
 FK: `category_id` -> `categories(id)`  
-Связи: `projects 1:M tasks`, `categories 1:M tasks`.
+Связи: `users 1:M tasks`, `projects 1:M tasks`, `categories 1:M tasks`.
 
 ### holidays
 
@@ -105,6 +107,7 @@ FK: `task_id` -> `tasks(id)`
 ## Связи между таблицами
 
 - `users 1:M projects` - один пользователь создаёт несколько проектов.
+- `users 1:M tasks` - один пользователь может иметь несколько задач, включая задачи без проекта.
 - `projects 1:M tasks` - один проект содержит несколько задач.
 - `categories 1:M tasks` - одна категория может быть назначена нескольким задачам.
 - `tasks 1:M task_comments` - у одной задачи может быть несколько комментариев.

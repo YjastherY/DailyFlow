@@ -58,12 +58,21 @@ DailyFlow/
 │   └── app.js
 ├── docs/
 │   ├── report.md
+│   ├── up11-database-report.md
+│   ├── er-diagram.png
 │   ├── use-case.png
 │   └── screenshots/
 │       ├── home.png
 │       ├── tasks.png
 │       ├── calendar.png
 │       └── analytics.png
+├── database/
+│   ├── schema.sql
+│   ├── seed.sql
+│   ├── queries.sql
+│   ├── verify_up11.py
+│   ├── verification_output.txt
+│   └── dailyflow_up11.sqlite
 └── README.md
 ```
 

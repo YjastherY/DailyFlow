@@ -35,7 +35,7 @@ task_id | task_title | priority | deadline | status | project_title | category_t
 3 | Спроектировать таблицы БД | high | 2026-05-24 | active | Учебная практика УП.11 | Учёба | Shizuki
 4 | Подготовить SQL-запросы | medium | 2026-05-24 | active | Учебная практика УП.11 | Учёба | Shizuki
 7 | Проверить выполнение SQL-скрипта | medium | 2026-05-24 | completed | Учебная практика УП.11 | Учёба | Shizuki
-6 | Проверить README | low | 2026-05-25 | active |  | Личное | 
+6 | Проверить README | low | 2026-05-25 | active |  | Личное | Shizuki
 
 Control JOIN after query execution:
 project | total_tasks | completed_tasks

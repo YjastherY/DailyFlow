@@ -33,6 +33,7 @@ CREATE TABLE categories (
 
 CREATE TABLE tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
     project_id INTEGER,
     category_id INTEGER NOT NULL,
     title TEXT NOT NULL,
@@ -42,6 +43,7 @@ CREATE TABLE tasks (
     status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'completed')),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     completed_at TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
 );
@@ -73,6 +75,7 @@ CREATE TABLE task_status_history (
 );
 
 CREATE INDEX idx_projects_user_id ON projects(user_id);
+CREATE INDEX idx_tasks_user_id ON tasks(user_id);
 CREATE INDEX idx_tasks_project_id ON tasks(project_id);
 CREATE INDEX idx_tasks_category_id ON tasks(category_id);
 CREATE INDEX idx_tasks_deadline ON tasks(deadline);
