@@ -92,6 +92,10 @@ http://localhost:8000/index.html
 
 - [Описание дипломного проекта](docs/report.md)
 - [Use-case диаграмма](docs/use-case.png)
+- [Отчёт УП.11 по базе данных](docs/up11-database-report.md)
+- [ER-диаграмма базы данных](docs/er-diagram.png)
+- [SQL-схема базы данных](database/schema.sql)
+- [SQL-запросы УП.11](database/queries.sql)
 - [Скриншот главной страницы](docs/screenshots/home.png)
 - [Скриншот страницы задач и проектов](docs/screenshots/tasks.png)
 - [Скриншот календаря](docs/screenshots/calendar.png)
